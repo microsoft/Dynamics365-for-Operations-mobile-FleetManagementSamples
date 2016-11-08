@@ -1,2 +1,4 @@
 # Dynamics365-for-Operations-mobile-FleetManagementSamples
-Developer samples for developing mobile experiences
+Here you will find developer samples for developing mobile experiences with Dynamics 365 for Operations
+
+We're still working on getting things setup :)
