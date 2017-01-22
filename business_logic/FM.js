@@ -1,92 +1,87 @@
 function main(metadataService, dataService, cacheService, $q) {
 	// Design for Reservation details page
 	var getReservationDetailsDesign =  function () { 
-		return {                         
+		return {     
+			// Page root container                    
 			"flexFlow":"column nowrap",
 			"items":[
-				// uppper half, black bg
+				// Upper third of page, contains 4 rows
 				{
 					"flexFlow":"column nowrap", 
 					"background":"dark",
 					"border": "none", 
 					"padding":"small",
-					"items":
-					[
-						// row with customer image and name
+					"items":[
+						// Row 1/4 with customer image and name
 						{   
 							"flexFlow":"row nowrap",
 							"alignItems":"center",
 							"justifyItems":"center",   
 							"labelStyle":"hidden",             
-							"items":
-							[
-								// customer image
+							"items":[
 								{
+									// Customer image
 									"name":"FMCustomer_Image",
 									"imageStyle":"circular",
-									height:3, // control specific property
-									width:3,  // control specific property
+									height:3, 
+									width:3
 								},
-								// customer name
 								{
+									// Customer name
 									name: "FMCustomer_FullName",
-									padding: "none",
+									padding: "none"
 								}
 							]
 						},
-						// row with rental id
+						// Row 2/4 with vehicle description
 						{
 							"justifyItems":"center",
 							"items":[
 								{
 									"name":"FMVehicle_FullDescription",
-									"labelStyle":"hidden",
+									"labelStyle":"hidden"
 								}
 							]
 						},
-						// row with header's detail fields
+						// Row 3/4 with reservation's detail fields
 						{
-							"flexFlow":"row nowrap", // could become single column if not enough space on single line/row
-							"justifyItems":"space-between",
-							"labelStyle":"inline", // inline, stacked or hidden           
-							"items":
-							[
-								// detail column 1
+							"flexFlow":"row nowrap",
+							"labelStyle":"inline",
+							"items":[
 								{
+									// Column 1
 									"flexSize":"1",
 									"flexFlow":"column nowrap",
 									"alignItems":"flex-start",
-									"items":
-									[
-										// status
+									"items":[
 										{
-											"name":"FMRental_Status",
+											// Status
+											"name":"FMRental_State",
 											"label":"Status"
 										},
-										// start date
+										// Start date
 										"FMRental_StartDate"                          
 									]
 								},
-								// detail column 2
 								{
+									// Column 2
 									"flexSize":"1",
 									"flexFlow":"column nowrap",
 									"alignItems":"flex-end",
-									"items":
-									[
-										// vehicle
+									"items":[
 										{
+											// Rental Id
 											"name":"FMRental_RentalId",
 											"label":"Id"
 										},
-										// end date
+										// Dnd date
 										"FMRental_EndDate"                   
 									]
 								}
 							]
 						},        
-						// row with actions                            
 						{
+							// Row 4/4 with the actions
 							"flexFlow":"row nowrap",
 							"justifyItems": "space-around",                                    
 							"items":
@@ -119,35 +114,30 @@ function main(metadataService, dataService, cacheService, $q) {
 						}
 					]
 				},
-				// lines list area
 				{
+					// Middle thrid of page, contains list
 					"flexSize":"1",
 					"allowScroll": true,
-					"items": 
-					[
+					"items":[
 						{
+							// List with rental charges
 							"name":"FMRentalCharge",
-							"flexFlow":"column nowrap",      
 							"alignItems":"stretch",
 							"itemBorder": true,
-							"design":                        
-							{                                
+							"design":{                                
+								// Override of default list design
 								"flexFlow":"row nowrap",
 								"justifyItems":"space-between",
 								"labelStyle":"hidden", 
 								border: "none",
-								"items":
-								[
-									{
-										name: "FMRentalCharge_ChargeType",
-									},
-									{
-										name: "FMRentalCharge_PerUnitAmount",
-									}
+								"items":[
+										"FMRentalCharge_ChargeType",
+										"FMRentalCharge_PerUnitAmount"
 								]
 							}
 						},
 						{
+							// Navigation to action for adding charge lines
 							"type":"Navigation",
 							label: "Add charge",  
 							"icon":"plus",
@@ -155,21 +145,22 @@ function main(metadataService, dataService, cacheService, $q) {
 						}
 					]
 				},
-				// totals row
 				{
-					"flexFlow":"row nowrap",                                
-					items:
-					[
+					// Lower third of page
+					"flexFlow":"row nowrap",
+					border:"solid",
+					labelStyle:"inline",                                
+					items:[
 						{
-							name: "FMRental_VehicleRateTotal",
+							// Total of vehicle rate for reservation period
+							name:"FMRental_VehicleRateTotal",
 							label:"Vehicle",
-							labelStyle:"inline",
 							"flexSize":"1"
 						},
 						{
-							name: "CalculatedTotal",
+							// Total of vehicle rate and retal charges
+							name:"CalculatedTotal",
 							label:"Sub-total",
-							labelStyle:"inline",
 							"flexSize":"1"
 						}
 					]                            
@@ -305,85 +296,160 @@ function main(metadataService, dataService, cacheService, $q) {
 		};
 	};
 
-	return {
-        appInit: function (appMetadata) {
-			metadataService.configureWorkspace({design: getReservationWorkspaceDesign()});			               
-            
-			metadataService.configurePage('Reservation-details', {design: getReservationDetailsDesign()}); 
-			
-			metadataService.hideNavigation('Select-a-customer', 'Select-a-vehicle', 'Customer-rentals', 'Reservation-discounts', 'Discount-details', 'Rental-charges');
-            
-			metadataService.addLink('Customer-details', 'Customer-rentals', 'cust-rentals-nav-control', 'Rentals', true);
-
-			metadataService.configureControl('All-Customers', 'FMCustomer_RecId', { hidden: true });
-			metadataService.configureControl('All-Vehicles', 'FMVehicle_RecId', { hidden: true });
-
-			metadataService.configureControl('Update-Customer-Details', 'FMCustomer_CellPhone', { hidden: true });
-
-			metadataService.configureLookup('Add-Reservation', 'FMRental_Customer', { lookupPage: 'All-Customers', valueField: 'FMCustomer_RecId', displayField: 'FMCustomer_FullName', showLookupPage: true });			
-			metadataService.configureLookup('Add-Reservation', 'FMRental_Vehicle', { lookupPage: 'All-Vehicles', valueField: 'FMVehicle_RecId', displayField: 'FMVehicle_FullDescription', showLookupPage: true });
-			
-			metadataService.configureAction('Edit-Reservation', { sourcePage: 'Reservation-details', isIdempotent: true});
-			metadataService.configureAction('Update-Customer-Details', { sourcePage: 'Customer-details', isIdempotent: true});
-			
-			metadataService.configureControl('All-Customers', 'FMCustomer_Image', { imageStyle: 'circular' });
-			metadataService.configureControl('Customer-details', 'FMCustomer_Image', { imageStyle: 'circular' });
-			metadataService.configureControl('All-Active-Reservations', 'FMCustomer_Image', { imageStyle: 'circular' });
-			
-			metadataService.configureControl('Update-picture', 'FMCustomer_UploadPhoto', { boundField: 'Image' });
-			metadataService.configureControl('Update-license-picture', 'FMCustomer_UploadLicense', { boundField: 'LicenseImage' });
-
-			var newCustomerTaskMetadata = metadataService.findTask("New-customer");
+	var configureCustomerFullNameUpdater = function(){
+		var newCustomerTaskMetadata = metadataService.findTask("New-customer");
 			if(newCustomerTaskMetadata){
 				var firstNameControl = metadataService.findControl(newCustomerTaskMetadata, 'FMCustomer_FirstName');
 				var lastNameControl = metadataService.findControl(newCustomerTaskMetadata, 'FMCustomer_LastName');
-			}
-			
-        },
-		pageInit: function (pageMetadata, context) {
-			if (pageMetadata.Name === 'Reservation-details') {
-				
-				var pageEvaluatorFunction = function (pageDataWrapper) {
-					var vin = pageDataWrapper.getControlValue('FMVehicle_VIN');
-					var vehicleDes = pageDataWrapper.getControlValue('FMVehicle_FullDescription');
-					if (vin) {
-						pageDataWrapper.setControlValue('FMVehicle_FullDescription', vehicleDes + "--" + vin);
-					}
+				if (firstNameControl && lastNameControl) {
+					dataService.setFieldUpdater(
+						newCustomerTaskMetadata,
+						'temp-fleet-field-id-1',
+						'fullName',
+						function (parentData, entityId, reconciledState) {
+							if(parentData) {
+								var firstName = parentData[firstNameControl.Id];
+								var lastName = parentData[lastNameControl.Id];
+
+								if (firstName) {
+									if (lastName) {
+										return firstName + ' ' + lastName;
+									}
+									return firstName;
+								} else {
+									return lastName;
+								}
+							}  
+							return null;                      
+						}
+					);
 				}
-				metadataService.configurePage('Reservation-details', { onDataLoaded: pageEvaluatorFunction });
+			}
+	};
 
-				metadataService.configureAction('Delete-reservation', { visible: true });
-				metadataService.configureAction('Edit-Reservation', { visible: true });
-				metadataService.configureAction('Start-rental', { visible: true });
-				metadataService.configureAction('Complete-rental', { visible: true });
-				
-				if (context.pageContext) {
-					var contextParts = context.pageContext.split(':');
-					if (contextParts && contextParts.length === 2) {
+	var reservationDetailsLoaded = function (pageDataWrapper) {
+		var vin = pageDataWrapper.getControlValue('FMVehicle_VIN');
+		var vehicleDes = pageDataWrapper.getControlValue('FMVehicle_FullDescription');
+		if (vin) {
+			pageDataWrapper.setControlValue('FMVehicle_FullDescription', vehicleDes + "--" + vin);
+		}
+	};
+	
+	var newCustomerSubmitted = function (taskDataWrapper) {
+		var firstName = taskDataWrapper.getControlValue('FMCustomer_FirstName');
+		var lastName = taskDataWrapper.getControlValue('FMCustomer_LastName');
 
-						var entityType = contextParts[0];
-						var entityId = contextParts[1];
-						if (entityType && entityId) {
-							
-							var entityDataWrapper = dataService.getEntityData(entityType, entityId);
-							if (entityDataWrapper) {
-								
-								var rentalStatus = entityDataWrapper.getPropertyValue('RentalStatus');
-								if (rentalStatus === 'Ready for pickup') {
-									metadataService.configureAction('Complete-rental', { visible: false });
-								}
-								else if (rentalStatus === 'In progress') {
-									metadataService.configureAction('Start-rental', { visible: false });
-								}
-								else if (rentalStatus === 'Complete') {
-									metadataService.configureAction('Start-rental', { visible: false });
-									metadataService.configureAction('Complete-rental', { visible: false });
-									metadataService.configureAction('Edit-Reservation', { visible: true });
-								}
-							}
+		if (firstName && lastName) {
+			taskDataWrapper.setControlValue('FullName', firstName + " " + lastName);
+		}
+	};
+
+	// Update the visibility of Actions on the Reservation details Page based on the state of the Reservation
+	var configureReservationDetails_RentalStatusBehavior = function(context){
+		metadataService.configureAction('Delete-reservation', { visible: true });
+		metadataService.configureAction('Edit-Reservation', { visible: true });
+		metadataService.configureAction('Start-rental', { visible: true });
+		metadataService.configureAction('Complete-rental', { visible: true });
+		
+		if (context.pageContext) {
+			var contextParts = context.pageContext.split(':');
+			if (contextParts && contextParts.length === 2) {
+
+				var entityType = contextParts[0];
+				var entityId = contextParts[1];
+				if (entityType && entityId) {
+					
+					var entityDataWrapper = dataService.getEntityData(entityType, entityId);
+					if (entityDataWrapper) {
+						
+						var rentalStatus = entityDataWrapper.getPropertyValue('State');
+						if (rentalStatus === 'Ready for pickup') {
+							metadataService.configureAction('Complete-rental', { visible: false });
+						}
+						else if (rentalStatus === 'In progress') {
+							metadataService.configureAction('Start-rental', { visible: false });
+						}
+						else if (rentalStatus === 'Complete') {
+							metadataService.configureAction('Start-rental', { visible: false });
+							metadataService.configureAction('Complete-rental', { visible: false });
+							metadataService.configureAction('Edit-Reservation', { visible: true });
 						}
 					}
 				}
+			}
+		}
+	};
+
+	// Set the default value on the mileage field, based on the previous mileage
+	var configureCompleteRental_MileageBehavior = function(){
+		if (context.pageContext) {
+			var contextParts = context.pageContext.split(':');
+			if (contextParts && contextParts.length === 2) {
+
+				var entityType = contextParts[0];
+				var entityId = contextParts[1];
+				if (entityType && entityId) {
+					
+					var entityDataWrapper = dataService.getEntityData(entityType, entityId);
+					if (entityDataWrapper) {
+						
+						var vehicleMileage = entityDataWrapper.getPropertyValue('FMVehicle/Mileage');
+						if (vehicleMileage && vehicleMileage.$ref) {
+							taskData.setDefaultControlValue('FMRental_EndMileage', parseInt(vehicleMileage.value) + 1);
+						}
+					}
+				}
+			}
+		}
+	};
+
+	return {
+        appInit: function (appMetadata) {
+
+			/* Workspace configuration */
+			// (Needs v 1.3.0 for compatibility) metadata Service.configureWorkspace({design: getReservationWorkspaceDesign()});	               
+			metadataService.hideNavigation('Select-a-customer', 'Select-a-vehicle', 'Customer-rentals', 'Reservation-discounts', 'Discount-details', 'Rental-charges');
+			
+			/** Page configurations **/
+			/* All reservations */
+			metadataService.configureControl('All-Active-Reservations', 'FMCustomer_Image', { imageStyle: 'circular' });
+			/* Reservation details */
+			metadataService.configurePage('Reservation-details', { onDataLoaded: reservationDetailsLoaded });
+			// (Needs v 1.3.0 for compatibility) metadataService.configurePage('Reservation-details', {design: getReservationDetailsDesign()});			
+			/* All customers */
+			metadataService.configureControl('All-Customers', 'FMCustomer_RecId', { hidden: true });
+			metadataService.configureControl('All-Customers', 'FMCustomer_Image', { imageStyle: 'circular' });
+			/* Customer details */
+			metadataService.addLink('Customer-details', 'Customer-rentals', 'cust-rentals-nav-control', 'Rentals', true);
+			metadataService.configureControl('Customer-details', 'FMCustomer_Image', { imageStyle: 'circular' });
+            /* All vehicles */
+			metadataService.configureControl('All-Vehicles', 'FMVehicle_RecId', { hidden: true });
+
+			/** Action configurations **/
+			/* Add reservation */
+			// (With KB 3216943, these lookups are configrued in static metadata) 
+			// metadataService.configureLookup('Add-Reservation', 'FMRental_Customer', { lookupPage: 'All-Customers', valueField: 'FMCustomer_RecId', displayField: 'FMCustomer_FullName', showLookupPage: true });			
+			// metadataService.configureLookup('Add-Reservation', 'FMRental_Vehicle', { lookupPage: 'All-Vehicles', valueField: 'FMVehicle_RecId', displayField: 'FMVehicle_FullDescription', showLookupPage: true });
+			/* Edit reservation */
+			metadataService.configureAction('Edit-Reservation', { sourcePage: 'Reservation-details', isIdempotent: true});
+			/* Update customer details */		
+			metadataService.configureControl('Update-Customer-Details', 'FMCustomer_CellPhone', { hidden: true });
+			metadataService.configureAction('Update-Customer-Details', { sourcePage: 'Customer-details', isIdempotent: true});
+			/* Update customer photo */			
+			metadataService.configureControl('Update-picture', 'FMCustomer_UploadPhoto', { boundField: 'Image' });
+			/* Update customer license image */
+			metadataService.configureControl('Update-license-picture', 'FMCustomer_UploadLicense', { boundField: 'LicenseImage' });
+			/* New customer */
+			configureCustomerFullNameUpdater();
+			metadataService.configureAction('New-customer', { onSubmit: newCustomerSubmitted });
+			metadataService.configureControl('New-customer', 'FMAddressTable_AddressLine2Copy2', { hidden: true });
+        },
+		pageInit: function (pageMetadata, context) {
+
+			/** Page state-based configurations **/
+			/* Reservation details */
+			if (pageMetadata.Name === 'Reservation-details') {
+				configureReservationDetails_RentalStatusBehavior(context);
 			}
 		},
 		taskInit: function (taskMetadata, context, taskData) {
@@ -391,26 +457,8 @@ function main(metadataService, dataService, cacheService, $q) {
 				taskData.setDefaultControlValue('FMRental_StartDate', new Date());
 			}
 			else if (taskMetadata.Name === 'Complete-rental') {
-				if (context.pageContext) {
-					var contextParts = context.pageContext.split(':');
-					if (contextParts && contextParts.length === 2) {
-
-						var entityType = contextParts[0];
-						var entityId = contextParts[1];
-						if (entityType && entityId) {
-							
-							var entityDataWrapper = dataService.getEntityData(entityType, entityId);
-							if (entityDataWrapper) {
-								
-								var vehicleMileage = entityDataWrapper.getPropertyValue('FMVehicle/Mileage');
-								if (vehicleMileage && vehicleMileage.$ref) {
-									taskData.setDefaultControlValue('FMRental_EndMileage', parseInt(vehicleMileage.value) + 1);
-								}
-							}
-						}
-					}
-				}
+				configureCompleteRental_MileageBehavior(context, taskData);				
 			}
-		},
+		}
     }
 }
