@@ -3,7 +3,7 @@ function main(metadataService, dataService, cacheService, $q) {
 	// Business logic initialization event handlers
 	let workspaceInitialization = function (appMetadata) {
 		/* Workspace configuration */
-		// (ver 1.3.0) metadataService.configureWorkspace({design: getReservationWorkspaceDesign()});	               
+		// (ver 1.3.0) metadataService.configureWorkspace({design: handlers.getReservationWorkspaceDesign()});	               
 		metadataService.hideNavigation(
 			pageNames.CustomerRentals, 
 			pageNames.ReservationDiscounts, 
@@ -14,7 +14,7 @@ function main(metadataService, dataService, cacheService, $q) {
 		/** Page configurations **/
 		metadataService.configureControl(pageNames.ActiveReservations, controlNames.CustomerImage, { imageStyle: 'circular' });
 		metadataService.configurePage(pageNames.ReservationDetails, { onDataLoaded: handlers.reservationDetailsLoaded });
-		// (ver 1.3.0) metadataService.configurePage('Reservation-details', {design: getReservationDetailsDesign()});			
+		// (ver 1.3.0) metadataService.configurePage('Reservation-details', {design: handlers.getReservationDetailsDesign()});			
 		metadataService.configureControl(pageNames.AllCustomers, controlNames.CustomerRecId, { hidden: true });
 		metadataService.configureControl(pageNames.AllCustomers, controlNames.CustomerImage, { imageStyle: 'circular' });
 		metadataService.addLink(pageNames.CustomerDetails, pageNames.CustomerRentals, controlNames.CustomerRentals, 'Rentals', true);
@@ -234,29 +234,33 @@ function main(metadataService, dataService, cacheService, $q) {
 	const handlers = {
 		// Design for Reservation details page
 		getReservationDetailsDesign: function () { 
-			return {     
-				// Page root container                    
+			return {
+				// Page root container
 				"flexFlow":"column nowrap",
 				"items":[
 					// Upper third of page, contains 4 rows
 					{
-						"flexFlow":"column nowrap", 
-						"background":"dark",
-						"border": "none", 
+						"flexFlow":"column nowrap",
+						"background":"theme",
+						"color":"light",
+						"fontSize":"small",
+						"border": "none",
 						"padding":"small",
 						"items":[
 							// Row 1/4 with customer image and name
-							{   
+							{
 								"flexFlow":"row nowrap",
 								"alignItems":"center",
-								"justifyItems":"center",   
-								"labelStyle":"hidden",             
+								"justifyItems":"center",
+								"labelStyle":"hidden",
+								"fontSize":"large",
+								"fontWeight":"bold",
 								"items":[
 									{
 										// Customer image
 										"name":"FMCustomer_Image",
 										"imageStyle":"circular",
-										height:3, 
+										height:3,
 										width:3
 									},
 									{
@@ -272,6 +276,7 @@ function main(metadataService, dataService, cacheService, $q) {
 								"items":[
 									{
 										"name":"FMVehicle_FullDescription",
+										"fontSize":"medium",
 										"labelStyle":"hidden"
 									}
 								]
@@ -293,7 +298,7 @@ function main(metadataService, dataService, cacheService, $q) {
 												"label":"Status"
 											},
 											// Start date
-											"FMRental_StartDate"                          
+											"FMRental_StartDate",
 										]
 									},
 									{
@@ -308,15 +313,16 @@ function main(metadataService, dataService, cacheService, $q) {
 												"label":"Id"
 											},
 											// Dnd date
-											"FMRental_EndDate"                   
+											"FMRental_EndDate"
 										]
 									}
 								]
-							},        
+							},
 							{
 								// Row 4/4 with the actions
 								"flexFlow":"row nowrap",
-								"justifyItems": "space-around",                                    
+								"justifyItems": "space-around",
+								"fontSize":"small",
 								"items":
 								[
 									{
@@ -324,24 +330,24 @@ function main(metadataService, dataService, cacheService, $q) {
 										label: "Complete",
 										style: "button",
 										icon: "checkmark",
-										backgroundColor: "positive",
-										"navigation":metadataService.navigateTo("Complete-rental"),
+										"background": "lightGreen",
+										target:"Complete-rental",
 									},
 									{
 										"type":"Navigation",
 										label: "Delete",
 										style: "button",
 										icon: "trash-b",
-										backgroundColor: "negative",
-										"navigation":metadataService.navigateTo("Delete-reservation"),
+										"background": "negative",
+										target:"Delete-reservation",
 									},
 									{
 										"type":"Navigation",
 										label: "Edit",
 										style: "button",
 										icon: "edit",
-										backgroundColor: "neutral",
-										"navigation":metadataService.navigateTo("Edit-Reservation"),
+										"background": "neutral",
+										target:"Edit-Reservation",
 									}
 								]
 							}
@@ -350,6 +356,7 @@ function main(metadataService, dataService, cacheService, $q) {
 					{
 						// Middle thrid of page, contains list
 						"flexSize":"1",
+						"fontWeight":"bold",
 						"allowScroll": true,
 						"items":[
 							{
@@ -357,32 +364,38 @@ function main(metadataService, dataService, cacheService, $q) {
 								"name":"FMRentalCharge",
 								"alignItems":"stretch",
 								"itemBorder": true,
-								"design":{                                
+								"color":"theme",
+								"design":{
 									// Override of default list design
 									"flexFlow":"row nowrap",
 									"justifyItems":"space-between",
-									"labelStyle":"hidden", 
+									"labelStyle":"hidden",
 									border: "none",
 									"items":[
-											"FMRentalCharge_ChargeType",
-											"FMRentalCharge_PerUnitAmount"
+										"FMRentalCharge_ChargeType",
+										{
+											name:"FMRentalCharge_PerUnitAmount",
+											"fontWeight":"normal",
+										}
 									]
 								}
-							},
-							{
-								// Navigation to action for adding charge lines
-								"type":"Navigation",
-								label: "Add charge",  
-								"icon":"plus",
-								"navigation":metadataService.navigateTo("Add-charge"),
 							}
 						]
+					},
+					{
+						// Navigation to action for adding charge lines - floating under the scrollable lines list
+						"type":"Navigation",
+						label: "Add charge",
+						"icon":"plus",
+						target:"Add-charge",
+						"fontWeight":"bold",
 					},
 					{
 						// Lower third of page
 						"flexFlow":"row nowrap",
 						border:"solid",
-						labelStyle:"inline",                                
+						labelStyle:"inline",
+						"fontWeight": "normal",
 						items:[
 							{
 								// Total of vehicle rate for reservation period
@@ -396,9 +409,9 @@ function main(metadataService, dataService, cacheService, $q) {
 								label:"Sub-total",
 								"flexSize":"1"
 							}
-						]                            
+						]
 					}
-						
+
 				]
 			}
 		},
@@ -411,8 +424,10 @@ function main(metadataService, dataService, cacheService, $q) {
 					{
 						"flexFlow":"row nowrap",
 						"background":"dark",
-						"border": "none", 
-						"justifyItems": "space-around",                                    
+						"color":"light",
+						"fontSize":"large",
+						"border": "none",
+						"justifyItems": "space-around",
 						"items":
 						[
 							{
@@ -420,46 +435,49 @@ function main(metadataService, dataService, cacheService, $q) {
 								label: "Customers",
 								style: "button",
 								showCount: true,
-								"navigation":metadataService.navigateTo("All-Customers"),
+								target:"All-Customers",
+								excludeContext: true,
 							},
 							{
 								"type":"Navigation",
 								label: "Reservations",
 								style: "button",
 								showCount: true,
-								"navigation":metadataService.navigateTo("All-Reservations"),
+								target:"All-Reservations",
+								excludeContext: true,
 							},
 							{
 								"type":"Navigation",
 								label: "Vehicles",
 								style: "button",
 								showCount: true,
-								"navigation":metadataService.navigateTo("All-Vehicles"),
+								target:"All-Vehicles",
+								excludeContext: true,
 							}
 						]
 					},
-					// lowe half - grow or shrink
+					// lower half - grow or shrink
 					{
 						"flexSize":"1",
-						"allowScroll": true,   
-						items: 
+						"allowScroll": true,
+						items:
 						[
 							// Part to include all active reservationa
 							{
 								"type":"Part",
-								"contentPage": "All-Active-Reservations",
-								design: 
+								target: "All-Active-Reservations",
+								design:
 								{
 									// page
-									"flexFlow":"column nowrap",                                            
+									"flexFlow":"column nowrap",
 									"items":
-									[ 
+									[
 										{
-											"name":"RentalsGrid",                                                        
+											"name":"RentalsGrid",
 											"flexSize":"1",
 											"hideSearchBar": true,
-											"itemBorder": true,  
-											"padding":"small",                                                      
+											"itemBorder": true,
+											"padding":"small",
 											"design":
 											{
 												"flexFlow":"column nowrap",
@@ -486,6 +504,7 @@ function main(metadataService, dataService, cacheService, $q) {
 														"justifyItems":"flex-start",
 														"alignItems":"center",
 														"labelStyle":"hidden",
+														"fontWeight":"700",
 														"items":
 														[
 															{
@@ -494,8 +513,11 @@ function main(metadataService, dataService, cacheService, $q) {
 																height:3,
 																width:3,
 															},
-															"FMVehicle_FullDescription"
-														] 
+															{
+																"name": "FMVehicle_FullDescription",
+																"fontWeight":"100",
+															}
+														]
 													},
 													// dates
 													{
@@ -512,8 +534,8 @@ function main(metadataService, dataService, cacheService, $q) {
 												]
 											}
 										}
-									]                   
-								}                                 
+									]
+								}
 							}
 						],
 					},
@@ -522,7 +544,7 @@ function main(metadataService, dataService, cacheService, $q) {
 						"type":"Navigation",
 						icon: "plus",
 						label: "Create reservation",
-						"navigation":metadataService.navigateTo("Add-Reservation"),
+						target:"Add-Reservation",
 					},
 				],
 			}
