@@ -550,7 +550,7 @@ function main(metadataService, dataService, cacheService, $q) {
 			}
 		},
 		// Handler for Reservation Details action data loaded
-		reservationDetailsLoaded: function (dataWrapper) {
+		reservationDetailsLoaded: function (pageInstance, dataWrapper) {
 			var vin = dataWrapper.getControlValue(controlNames.VehicleVIN);
 			var vehicleDes = dataWrapper.getControlValue(controlNames.VehicleDescription);
 			if (vin) {
