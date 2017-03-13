@@ -1,7 +1,7 @@
 function main(metadataService, dataService, cacheService, $q) {
 
 	// Business logic initialization event handlers
-	let workspaceInitialization = function (appMetadata) {
+	var workspaceInitialization = function (appMetadata) {
 		/* Workspace configuration */
 		// (ver 1.3.0) metadataService.configureWorkspace({design: handlers.getReservationWorkspaceDesign()});	               
 		metadataService.hideNavigation(
@@ -38,14 +38,14 @@ function main(metadataService, dataService, cacheService, $q) {
 		metadataService.configureControl(actionNames.CustomerNew, controlNames.CustomerLicense, {extType: "Barcode"});
 		
 	};
-	let pageInitialization = function (pageMetadata, context) {
+	var pageInitialization = function (pageMetadata, context) {
 		/** Page state-based configurations **/
 		/* Reservation details */
 		if (pageMetadata.Name === pageNames.ReservationDetails) {
 			handlers.configureReservationDetails_RentalStatusBehavior(pageMetadata, context);
 		}
 	};
-	let actionInitialization = function (taskMetadata, context, taskData) {
+	var actionInitialization = function (taskMetadata, context, taskData) {
 		if (taskMetadata.Name === actionNames.ReservationNew) {
 			taskData.setDefaultControlValue(controlNames.ReservationStartDate, new Date());
 		}
@@ -54,7 +54,7 @@ function main(metadataService, dataService, cacheService, $q) {
 		}
 	};    
 	// Tables and fields:
-	const entities = {
+	var entities = {
 		// Storing entity and field names for the potion of the FM data model used by the business logic
 		// This just makes it easy to reference the names while writing business logic
 		// We hope to have a tool in future updates which can generate automatically from the mobile workspace metadata
@@ -107,7 +107,7 @@ function main(metadataService, dataService, cacheService, $q) {
 		}
 	};
 	// Pages:
-	const pageNames = {
+	var pageNames = {
 		AllReservations: "All-Reservations",
 		ReservationDetails: "Reservation-details",
 		AllCustomers: "All-Customers",
@@ -120,7 +120,7 @@ function main(metadataService, dataService, cacheService, $q) {
 		ReservationCharges:"Rental-charges",
 	};
 	// Actions:
-	const actionNames = {
+	var actionNames = {
 		ReservationNew: "Add-Reservation",
 		ReservationComplete: "Complete-rental",
 		ReservationStart: "Start-rental",
@@ -134,7 +134,7 @@ function main(metadataService, dataService, cacheService, $q) {
 		CustomerDelete: "Delete-Customer-1",
 	};
 	// Controls:
-	const controlNames = {
+	var controlNames = {
 		ReservationList: "RentalsGrid",
 		ReservationId: "FMRental_RentalId",
 		ReservationStartDate: "FMRental_StartDate",
@@ -170,11 +170,11 @@ function main(metadataService, dataService, cacheService, $q) {
 		ReservationTotal: "FMRentalCharge_Quantity",
 	};
 	// Entity data change handlers
-	const validateEntity = function(entityName, actionName){
+	var validateEntity = function(entityName, actionName){
 
 		if(entityName == entities.FMCustomer.entityName){
 			// Determine which fields to validate based on the action used to change the data			
-			let validateFirst, validateLast, validatePhone, validateEmail, validateLicense;
+			var validateFirst, validateLast, validatePhone, validateEmail, validateLicense;
 			if(actionName == actionNames.CustomerNew){
 				validateFirst = validateLast = validatePhone = validateEmail = validateLicense = true;
 			}
@@ -183,11 +183,11 @@ function main(metadataService, dataService, cacheService, $q) {
 			}
 			// Return the onSubmit handler
 			return function (dataWrapper, submitArgs){
-				let first = dataWrapper.getControlValue(controlNames.CustomerFirstName);
-				let last = dataWrapper.getControlValue(controlNames.CustomerLastName);
-				let license = dataWrapper.getControlValue(controlNames.CustomerLicense);
-				let phone = dataWrapper.getControlValue(controlNames.CustomerCellPhone);
-				let email = dataWrapper.getControlValue(controlNames.CustomerEmail);			
+				var first = dataWrapper.getControlValue(controlNames.CustomerFirstName);
+				var last = dataWrapper.getControlValue(controlNames.CustomerLastName);
+				var license = dataWrapper.getControlValue(controlNames.CustomerLicense);
+				var phone = dataWrapper.getControlValue(controlNames.CustomerCellPhone);
+				var email = dataWrapper.getControlValue(controlNames.CustomerEmail);			
 
 				// Check to see if control exists, and if so, valiate that it is not empty
 				if(validateFirst && !first){
@@ -215,7 +215,7 @@ function main(metadataService, dataService, cacheService, $q) {
 							// Perform first-chance check against local data to see if the email is already in use
 							// This check may pass during onSubmit, but server may fail the check when it compares against the wider data set 
 							/* dataService.findEntityData API requires version 1.3.0 
-							let customer = dataService.findEntityData(names.FMCustomer.entityName, names.FMCustomer.Email.propertyName, email, true);
+							var customer = dataService.findEntityData(names.FMCustomer.entityName, names.FMCustomer.Email.propertyName, email, true);
 							if(customer != null && customer.getPropertyValue(names.FMCustomer.Email.propertyName) == email){
 								submitArgs.addMessage("This email address is in use by another customer. Please provide a different email address.");
 								submitArgs.cancel();
@@ -231,7 +231,7 @@ function main(metadataService, dataService, cacheService, $q) {
 		}
 	};
 	// Business logic event handlers
-	const handlers = {
+	var handlers = {
 		// Design for Reservation details page
 		getReservationDetailsDesign: function () { 
 			return {
@@ -623,9 +623,9 @@ function main(metadataService, dataService, cacheService, $q) {
 		},
 	};	
 	// Helpers for validating data types
-	const validateField = {
+	var validateField = {
 		email: function(email, submitArgs){
-			let emailRegEx = /^[a-zA-Z][\.\w]*@\w[-\.\w]*\w\.[a-z]*/;
+			var emailRegEx = /^[a-zA-Z][\.\w]*@\w[-\.\w]*\w\.[a-z]*/;
 			if(!emailRegEx.exec(email)){
 				submitArgs.addMessage("Please enter a valid email address.", messageCode.error);
 				return false;
@@ -633,7 +633,7 @@ function main(metadataService, dataService, cacheService, $q) {
 			return true;
 		},
 		phone: function(phone, submitArgs){		
-			let phoneRegEx = /^\({0,1}\d{3}\){0,1}(-|\s){0,1}\d{3}(-|\s){0,1}\d{4}$/;
+			var phoneRegEx = /^\({0,1}\d{3}\){0,1}(-|\s){0,1}\d{3}(-|\s){0,1}\d{4}$/;
 			if(!phoneRegEx.exec(phone)){
 				submitArgs.addMessage("Please enter a 10-digit phone number in the format (###) ###-#### or ##########.", messageCode.error);
 				return false;				
@@ -642,7 +642,7 @@ function main(metadataService, dataService, cacheService, $q) {
 		}
 	};
 
-	const messageCode = {error: 1};
+	var messageCode = {error: 1};
 
 	return {
         appInit: workspaceInitialization,
