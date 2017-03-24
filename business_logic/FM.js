@@ -37,12 +37,18 @@ function main(metadataService, dataService, cacheService, $q) {
 		metadataService.configureControl(actionNames.CustomerNew, controlNames.CustomerAddress2, { hidden: true });
 		metadataService.configureControl(actionNames.CustomerNew, controlNames.CustomerLicense, {extType: "Barcode"});
 		
+		// Initialize all actions on Reservation Details to be hidden initially.
+		metadataService.configureAction(actionNames.ReservationEdit, { hidden: true });
+		metadataService.configureAction(actionNames.ReservationComplete, { hidden: true });
+		metadataService.configureAction(actionNames.ReservationChargeAdd, { hidden: true });
+		metadataService.configureAction(actionNames.ReservationDelete, { hidden: true });
+		metadataService.configureAction(actionNames.ReservationStart, { hidden: true });
 	};
 	var pageInitialization = function (pageMetadata, context) {
 		/** Page state-based configurations **/
 		/* Reservation details */
 		if (pageMetadata.Name === pageNames.ReservationDetails) {
-			handlers.configureReservationDetails_RentalStatusBehavior(pageMetadata, context);
+			metadataService.configurePage(pageNames.ReservationDetails, { onDataLoaded: handlers.configureReservationDetails_RentalStatusBehavior });
 		}
 	};
 	var actionInitialization = function (taskMetadata, context, taskData) {
@@ -562,41 +568,19 @@ function main(metadataService, dataService, cacheService, $q) {
 			navigation.params.pageId = metadataService.findPage("Customer-details").Id;
 		},		
 		// Update the visibility of Actions on the Reservation details Page based on the state of the Reservation
-		configureReservationDetails_RentalStatusBehavior: function (pageMetadata, context){
-			metadataService.configureAction(actionNames.ReservationDelete, { visible: false });
-			metadataService.configureAction(actionNames.ReservationEdit, { visible: false });
-			metadataService.configureAction(actionNames.ReservationStart, { visible: false });
-			metadataService.configureAction(actionNames.ReservationComplete, { visible: false });
-			metadataService.configureAction(actionNames.ReservationChargeAdd, { visible: false });
-			
-			if (context.pageContext) {
-				var contextParts = context.pageContext.split(':');
-				if (contextParts && contextParts.length === 2) {
-
-					var entityType = contextParts[0];
-					var entityId = contextParts[1];
-					if (entityType && entityId) {
-						
-						var entityDataWrapper = dataService.getEntityData(entityType, entityId);
-						if (entityDataWrapper) {
-							
-							var rentalStatus = entityDataWrapper.getPropertyValue('State');
-							
-							if (rentalStatus === "1" || rentalStatus == "0" /*Ready for pickup or New*/) {
-								metadataService.configureAction(actionNames.ReservationDelete, { visible: true });
-								metadataService.configureAction(actionNames.ReservationEdit, { visible: true });
-								metadataService.configureAction(actionNames.ReservationStart, { visible: true });
-								metadataService.configureAction(actionNames.ReservationChargeAdd, { visible: true });
-							}
-							else if (rentalStatus === "2" /*In progress*/) {
-								metadataService.configureAction(actionNames.ReservationComplete, { visible: true });
-							}
-							else if (rentalStatus === "3" /*Complete*/) {
-								metadataService.configureAction(actionNames.ReservationDelete, { visible: true });
-							}
-						}
-					}
-				}
+		configureReservationDetails_RentalStatusBehavior: function (pageInstance, dataWrapper) {
+			var rentalState = dataWrapper.getControlValue(controlNames.ReservationState);
+			if (rentalState === "1" || rentalState == "0" /*Ready for pickup or New*/) {
+				pageInstance.getAction(actionNames.ReservationDelete).hidden = false;
+				pageInstance.getAction(actionNames.ReservationEdit).hidden = false;
+				pageInstance.getAction(actionNames.ReservationChargeAdd).hidden = false;
+				pageInstance.getAction(actionNames.ReservationStart).hidden = false;
+			}
+			else if (rentalState === "2" /*In progress*/) {
+				pageInstance.getAction(actionNames.ReservationComplete).hidden = false;
+			}
+			else if (rentalState === "3" /*Complete*/) {
+				pageInstance.getAction(actionNames.ReservationDelete).hidden = false;
 			}
 		},
 		// Set the default value on the mileage field, based on the previous mileage
