@@ -1,8 +1,12 @@
 function main(metadataService, dataService, cacheService, $q) {
 
+	// Uncomment the "(ver 1.3.0)" lines to turn on the styled content
+	
 	// Business logic initialization event handlers
 	var workspaceInitialization = function (appMetadata) {
 		/* Workspace configuration */
+		// The metadataService.configureWorkspace line configures the client-side business logic and styling for the workspace
+		//  Uncomment the metadataService.configureWorkspace line to turn on the styled version
 		// (ver 1.3.0) metadataService.configureWorkspace({design: handlers.getReservationWorkspaceDesign()});	               
 		metadataService.hideNavigation(
 			pageNames.CustomerRentals, 
@@ -14,6 +18,8 @@ function main(metadataService, dataService, cacheService, $q) {
 		/** Page configurations **/
 		metadataService.configureControl(pageNames.ActiveReservations, controlNames.CustomerImage, { imageStyle: 'circular' });
 		metadataService.configurePage(pageNames.ReservationDetails, { onDataLoaded: handlers.reservationDetailsLoaded });
+		// The metadataService.configurePage line configures the client-side business logic and styling for the page
+		//  Uncomment the metadataService.configurePage line to turn on the styled version
 		// (ver 1.3.0) metadataService.configurePage('Reservation-details', {design: handlers.getReservationDetailsDesign()});			
 		metadataService.configureControl(pageNames.AllCustomers, controlNames.CustomerRecId, { hidden: true });
 		metadataService.configureControl(pageNames.AllCustomers, controlNames.CustomerImage, { imageStyle: 'circular' });
